@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
-contract UserInfo {
+contract PatientInfo {
     struct UserData {
         string encryptedPrivateKey; // Encrypted private key
         string encryptedCPABESecretKey; // Encrypted CP-ABE secret key
@@ -28,18 +28,22 @@ contract UserInfo {
     }
 
     // Function to get user data
-    function getUserData(string memory _username)
-        public
-        view
-        returns (
-            string memory,
-            string memory,
-            string memory
-        )
-    {
-        UserData memory data = userInfo[_username];
+function getUserData(string memory _username)
+    public
+    view
+    returns (
+        string memory,
+        string memory,
+        string memory
+    )
+{
+    UserData memory data = userInfo[_username];
+    if (keccak256(bytes(data.status)) == keccak256(bytes("blacklisted"))) {
+        revert("Blacklisted");
+    } else {
         return (data.encryptedPrivateKey, data.encryptedCPABESecretKey, data.status);
     }
+}
 
     // Function to update user status
     function updateUserStatus(string memory _username, string memory _status) public {
